@@ -1,20 +1,27 @@
 import * as React from 'react';
-import Dialog from './Dialog';
 import Portal from 'rc-util/lib/PortalWrapper';
-import IDialogPropTypes from './IDialogPropTypes';
-import { IDialogChildProps } from './Dialog';
+import Dialog, { IDialogChildProps } from './Dialog';
+import { IDialogPropTypes } from './IDialogPropTypes';
 
 // fix issue #10656
 /*
-* getContainer remarks
-* Custom container should not be return, because in the Portal component, it will remove the
-* return container element here, if the custom container is the only child of it's component,
-* like issue #10656, It will has a conflict with removeChild method in react-dom.
-* So here should add a child (div element) to custom container.
-* */
+ * getContainer remarks
+ * Custom container should not be return, because in the Portal component, it will remove the
+ * return container element here, if the custom container is the only child of it's component,
+ * like issue #10656, It will has a conflict with removeChild method in react-dom.
+ * So here should add a child (div element) to custom container.
+ * */
 
-export default (props: IDialogPropTypes) => {
-  const { visible, getContainer, forceRender } = props;
+const DialogWrap: React.FC<IDialogPropTypes> = (props: IDialogPropTypes) => {
+  const { visible, getContainer, forceRender, destroyOnClose, afterClose } = props;
+  const [animatedVisible, setAnimatedVisible] = React.useState<boolean>(visible);
+
+  React.useEffect(() => {
+    if (visible) {
+      setAnimatedVisible(true);
+    }
+  }, [visible]);
+
   // 渲染在当前 dom 里；
   if (getContainer === false) {
     return (
@@ -25,18 +32,27 @@ export default (props: IDialogPropTypes) => {
     );
   }
 
+  // Destroy on close will remove wrapped div
+  if (!forceRender && destroyOnClose && !animatedVisible) {
+    return null;
+  }
+
   return (
-    <Portal
-      visible={visible}
-      forceRender={forceRender}
-      getContainer={getContainer}
-    >
+    <Portal visible={visible} forceRender={forceRender} getContainer={getContainer}>
       {(childProps: IDialogChildProps) => (
         <Dialog
           {...props}
+          afterClose={() => {
+            afterClose?.();
+            setAnimatedVisible(false);
+          }}
           {...childProps}
         />
       )}
     </Portal>
   );
 };
+
+DialogWrap.displayName = 'Dialog';
+
+export default DialogWrap;

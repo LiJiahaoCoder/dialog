@@ -8,7 +8,7 @@ notifications:
   - hust2012jiangkai@gmail.com
 
 node_js:
-- 10
+- 14
 
 before_install:
 - |

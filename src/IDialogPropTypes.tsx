@@ -1,22 +1,21 @@
 import { ReactNode, CSSProperties, SyntheticEvent } from 'react';
+import { GetContainer } from 'rc-util/lib/PortalWrapper';
 
-type IStringOrHtmlElement = string | HTMLElement;
-
-interface IDialogPropTypes {
+export interface IDialogPropTypes {
   className?: string;
   keyboard?: boolean;
   style?: CSSProperties;
   mask?: boolean;
   children?: any;
   afterClose?: () => any;
-  onClose?: (e: SyntheticEvent<HTMLDivElement>) => any;
+  onClose?: (e: SyntheticEvent) => any;
   closable?: boolean;
   maskClosable?: boolean;
   visible?: boolean;
-  destroyOnClose ?: boolean;
+  destroyOnClose?: boolean;
   mousePosition?: {
-    x: number,
-    y: number,
+    x: number;
+    y: number;
   };
   title?: ReactNode;
   footer?: ReactNode;
@@ -35,12 +34,11 @@ interface IDialogPropTypes {
   bodyProps?: any;
   maskProps?: any;
   wrapProps?: any;
-  getContainer?: IStringOrHtmlElement | (() => IStringOrHtmlElement) | false;
+  getContainer?: GetContainer | false;
   closeIcon?: ReactNode;
+  modalRender?: (node: ReactNode) => ReactNode;
   forceRender?: boolean;
   // https://github.com/ant-design/ant-design/issues/19771
   // https://github.com/react-component/dialog/issues/95
   focusTriggerAfterClose?: boolean;
 }
-
-export default IDialogPropTypes;
